@@ -1,9 +1,9 @@
-service: restapi
+service: notes-backend
 
 provider:
   name: aws
   runtime: nodejs18.x
-  region: us-east-1
+  region: us-west-1
   stage: prod
   memorySize: 128
   timeout: 5
