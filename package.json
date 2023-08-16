@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:dev": "serverless offline"
+    "build": "npx tsc",
+    "start:dev": "npm run build && serverless offline"
   },
   "keywords": [],
   "author": "",
@@ -13,7 +14,12 @@
     "aws-sdk": "^2.1435.0",
     "moment": "^2.29.4",
     "serverless-offline": "^12.0.4",
-    "underscore": "^1.13.6",
     "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.119",
+    "@types/node": "^20.5.0",
+    "@types/uuid": "^9.0.2",
+    "typescript": "^5.1.6"
   }
 }
