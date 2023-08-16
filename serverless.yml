@@ -24,7 +24,7 @@ provider:
   memorySize: 128
   timeout: 5
   endpointType: REGIONAL
-  environment: 
+  environment:
     NOTES_TABLE: ${self:service}-${opt:stage, self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
@@ -32,8 +32,8 @@ provider:
         - dynamodb:Query
         - dynamodb:PutItem
         - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}"
-      
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}"
+
 functions:
   add-note:
     handler: src/handlers/add-note.handler
