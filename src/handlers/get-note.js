@@ -10,7 +10,7 @@ exports.handler = async (event) => {
         const note_id = decodeURIComponent(event.pathParameters.note_id);
         const params = {
             TableName: tableName,
-            IndexName: 'node_id-index',
+            IndexName: tableName + '-gsi-1',
             KeyConditionExpression: 'note_id = :note_id',
             ExpressionAttributeValues: {
                 ":note_id": note_id,

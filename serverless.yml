@@ -109,7 +109,7 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         GlobalSecondaryIndexes:
-          - IndexName: node_id-index
+          - IndexName: ${self:provider.environment.NOTES_TABLE}-gsi-1
             KeySchema:
               - AttributeName: note_id
                 KeyType: HASH
