@@ -39,7 +39,7 @@ provider:
 
 functions:
   add-note:
-    handler: src/handlers/add-note.handler
+    handler: dist/handlers/add-note.lambdaHandler
     description: POST /note
     events:
       - http:
@@ -49,7 +49,7 @@ functions:
             origin: '*'
             headers: ${self:custom.allowedHeaders}
   update-note:
-    handler: src/handlers/update-note.handler
+    handler: dist/handlers/update-note.lambdaHandler
     description: PATCH /note
     events:
       - http:
@@ -59,7 +59,7 @@ functions:
             origin: '*'
             headers: ${self:custom.allowedHeaders}
   get-notes:
-    handler: src/handlers/get-notes.handler
+    handler: dist/handlers/get-notes.lambdaHandler
     description: GET /notes
     events:
       - http:
@@ -69,7 +69,7 @@ functions:
             origin: '*'
             headers: ${self:custom.allowedHeaders}
   get-note:
-    handler: src/handlers/get-note.handler
+    handler: dist/handlers/get-note.lambdaHandler
     description: GET /note/n/{note_id}
     events:
       - http:
@@ -79,7 +79,7 @@ functions:
             origin: '*'
             headers: ${self:custom.allowedHeaders}
   delete-note:
-    handler: src/handlers/delete-note.handler
+    handler: dist/handlers/delete-note.lambdaHandler
     description: DELETE /note
     events:
       - http:

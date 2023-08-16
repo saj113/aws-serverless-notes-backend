@@ -1,4 +1,4 @@
-﻿name: Deploy AWS SAM Service
+﻿name: Deploy
 
 on:
   push:
@@ -24,6 +24,9 @@ jobs:
 
       - name: npm install
         run: npm install
+
+      - name: Build
+        run: npm run build
 
       - name: serverless deploy
         uses: serverless/github-action@master
