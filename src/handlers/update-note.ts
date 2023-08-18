@@ -1,38 +1,31 @@
 ﻿import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import AWS from 'aws-sdk';
 import { getUserId, getUserName } from '../utils/headers.utils';
-import { create200Response } from '../utils/apiGatewayProxyResult.utils';
-import moment from 'moment';
-import { validateBody } from '../validators/apiGatewayProxyEventValidators';
+import {apiGatewayResult} from '../utils/apiGatewayProxyResult.utils';
 import { handleError } from '../utils/error.utils';
-
-const dynamodb = new AWS.DynamoDB.DocumentClient();
-const tableName = process.env.NOTES_TABLE!;
+import {diContainer} from '../container/diContainer';
+import {INoteService} from '../services/NoteService/interfaces/INoteService';
 
 export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    try {
-        const item = getItem(event);
-        await dynamodb.put({
-            TableName: tableName,
-            Item: item,
-            ConditionExpression: '#t = :t',
-            ExpressionAttributeNames: {
-                '#t': 'timestamp'
-            },
-            ExpressionAttributeValues: {
-                ':t': item.timestamp
-            }
-        }).promise();
+    const userId = getUserId(event.headers);
+    const userName = getUserName(event.headers);
+    if (!userId) {
+        return apiGatewayResult(400, JSON.stringify({error: 'User ID is not defined'}));
+    }
 
-        return create200Response(JSON.stringify(item));
+    if (!userName) {
+        return apiGatewayResult(400, JSON.stringify({error: 'User name is not defined'}));
+    }
+    
+    try {
+        const service = diContainer.resolve<INoteService>('NoteService');
+        const note = await service.updateNote({
+            ...JSON.parse(event.body!).Item,
+            user_id: userId,
+            user_name: userName,
+        });
+
+        return apiGatewayResult(200, JSON.stringify(note));
     } catch (error: any) {
         return handleError(error);
     }
 };
-
-const getItem = (event: APIGatewayProxyEvent) => ({
-    ...JSON.parse(validateBody(event)).Item,
-    user_id: getUserId(event.headers),
-    user_name: getUserName(event.headers),
-    expires: moment().add(90, 'days').unix(),
-});

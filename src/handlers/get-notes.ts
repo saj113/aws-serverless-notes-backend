@@ -1,38 +1,26 @@
 ﻿import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import AWS from 'aws-sdk';
 import { getUserId } from '../utils/headers.utils';
-import { DocumentClient } from 'aws-sdk/lib/dynamodb/document_client';
-import { create200Response } from '../utils/apiGatewayProxyResult.utils';
+import {apiGatewayResult} from '../utils/apiGatewayProxyResult.utils';
 import { handleError } from '../utils/error.utils';
-
-const dynamodb = new AWS.DynamoDB.DocumentClient();
-const tableName = process.env.NOTES_TABLE!;
+import {diContainer} from '../container/diContainer';
+import {INoteService} from '../services/NoteService/interfaces/INoteService';
 
 export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    console.log('get-notes');
     try {
         const query = event.queryStringParameters;
         const limit = query && query.limit ? parseInt(query.limit) : 5;
-        const user_id = getUserId(event.headers);
-        const params: DocumentClient.QueryInput = {
-            TableName: tableName,
-            KeyConditionExpression: 'user_id = :uid',
-            ExpressionAttributeValues: {
-                ":uid": user_id,
-            },
-            Limit: limit,
-            ScanIndexForward: false,
-        };
-        
-        let startTimestamp = query && query.start ? parseInt(query.start) : 0;
-        if (startTimestamp > 0) {
-            params.ExclusiveStartKey = {
-                user_id,
-                timestamp: startTimestamp
-            };
+        const userId = getUserId(event.headers);
+        if (!userId) {
+            return apiGatewayResult(400, JSON.stringify({error: 'User ID is not defined'}));
         }
+        const service = diContainer.resolve<INoteService>('NoteService');
+        const notes = await service.getList({
+            user_id: userId,
+            limit
+        });
 
-        const data = await dynamodb.query(params).promise();
-        return create200Response(JSON.stringify(data));
+        return apiGatewayResult(200, JSON.stringify(notes));
     } catch (error: any) {
         return handleError(error);
     }

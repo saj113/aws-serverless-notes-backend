@@ -1,29 +1,30 @@
 ﻿import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import AWS from 'aws-sdk';
 import { getUserId } from '../utils/headers.utils';
-import { DocumentClient } from 'aws-sdk/lib/dynamodb/document_client';
-import { validatePassParameter } from '../validators/apiGatewayProxyEventValidators';
-import { create200Response } from '../utils/apiGatewayProxyResult.utils';
+import {apiGatewayResult} from '../utils/apiGatewayProxyResult.utils';
 import { handleError } from '../utils/error.utils';
-
-const dynamodb = new AWS.DynamoDB.DocumentClient();
-const tableName = process.env.NOTES_TABLE;
+import {diContainer} from '../container/diContainer';
+import {INoteService} from '../services/NoteService/interfaces/INoteService';
+import {getParam} from '../utils/pathParameters.utils';
 
 export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     try {
-        const timestamp = parseInt(validatePassParameter(event, 'timestamp'));
+        const userId = getUserId(event.headers);
+        if (!userId) {
+            return apiGatewayResult(400, JSON.stringify({error: 'User ID is not defined'}));
+        }
+        
+        const timestamp = getParam(event.pathParameters, 'timestamp');
+        if (!timestamp) {
+            return apiGatewayResult(400, JSON.stringify({error: 'Timestamp is not defined'}));
+        }
 
-        const params: DocumentClient.DeleteItemInput = {
-            TableName: tableName!,
-            Key: {
-                user_id: getUserId(event.headers),
-                timestamp: timestamp,
-            },
-        };
+        const service = diContainer.resolve<INoteService>('NoteService');
+        await service.deleteNote({
+            user_id: userId,
+            timestamp,
+        });
 
-        await dynamodb.delete(params).promise();
-
-        return create200Response();
+        return apiGatewayResult();
     } catch (error: any) {
         return handleError(error);
     }
