@@ -8,12 +8,12 @@ export const handleApiGatewayEvent = async <T>(
     try {
         const controller = diContainer.resolve<T>(controllerContainerKey);
         return await controllerRequest(controller);
-    } catch (error: any) {
+    } catch (error: unknown) {
         return apiGatewayResult(
-            error.statusCode ? error.statusCode : 500,
+            500,
             JSON.stringify({
-                error: error?.name ? error.name : 'Exception',
-                message: error?.message ? error.message : 'Unknown error'
+                error: error instanceof Error ? error.name : 'Exception',
+                message: error instanceof Error ? error.message : 'Unknown error'
             }));
     }
 }

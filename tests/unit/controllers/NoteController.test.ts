@@ -4,7 +4,7 @@ import {NoteController} from '../../../src/controllers/NoteController/NoteContro
 import {createNote} from '../testData/createNote';
 
 describe('NoteController', () => {
-    let noteServiceMock = {
+    const noteServiceMock = {
         createNote: jest.fn(),
         deleteNote: jest.fn(),
         getNote: jest.fn(),
