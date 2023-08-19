@@ -25,8 +25,14 @@ jobs:
       - name: npm install
         run: npm install
 
+      - name: Run ESLint
+        run: npm run lint
+
       - name: Build
         run: npm run build
+        
+      - name: Unit tests
+        run: npm run test
 
       - name: serverless deploy
         uses: serverless/github-action@master

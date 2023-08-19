@@ -1,10 +1,9 @@
-﻿export interface Note {
+export interface UpdateNoteRequest {
     user_id: string;
+    user_name: string;
+    note_id: string;
     timestamp: number;
     title: string;
     content: string;
-    user_name: string;
-    expires: number;
-    note_id: string;
     cat: string;
 }

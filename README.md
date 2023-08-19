@@ -5,3 +5,9 @@
 ### Deploy project
 `serverless deploy`
 
+## Project commands
+### Build
+`npm run build`
+### Build & Start local server
+`npm run start:dev`
+
