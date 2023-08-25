@@ -2,6 +2,7 @@ service: notes-backend
 
 plugins:
   - serverless-offline
+  - serverless-domain-manager
 
 custom:
   allowedHeaders:
@@ -15,6 +16,13 @@ custom:
     - X-Amz-User-Agent
     - app_user_id
     - app_user_name
+  customDomain:
+    domainName: notes.oleksandrholub.com
+    basePath: 'v1'
+    stage: ${self:provider.stage}
+    createRoute53Record: true
+    endpointType: 'edge'
+    certificateName: oleksandrholub.com
 
 provider:
   name: aws
